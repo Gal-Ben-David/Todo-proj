@@ -13,3 +13,39 @@
     align-items: center;
     background-color: var(--clr1bg);
 }
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent dark background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    /* Ensure it appears on top of other elements */
+}
+
+.modal {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+
+    width: 20em;
+    height: 8em;
+    padding: 1em;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    border-radius: 0.5em;
+    background-color: #555555;
+
+    color: white;
+    font-size: 1.2rem;
+}

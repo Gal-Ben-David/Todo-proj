@@ -1,6 +1,7 @@
 const { useState } = React
 const { Link, NavLink } = ReactRouterDOM
 const { useNavigate } = ReactRouter
+const { useSelector, useDispatch } = ReactRedux
 
 import { userService } from '../services/user.service.js'
 import { UserMsg } from "./UserMsg.jsx"
@@ -11,7 +12,15 @@ import { showErrorMsg } from '../services/event-bus.service.js'
 export function AppHeader() {
     const navigate = useNavigate()
     const [user, setUser] = useState(userService.getLoggedinUser())
-    
+
+    const todos = useSelector(storeState => storeState.todos)
+
+    // Calculate the percentage of completed todos
+    const totalTodos = useSelector(storeState => storeState.todos.length)
+    const completedTodos = todos.filter(todo => todo.isDone).length
+    const progress = totalTodos ? (completedTodos / totalTodos) * 100 : 0
+
+
     function onLogout() {
         userService.logout()
             .then(() => {
@@ -48,6 +57,14 @@ export function AppHeader() {
                     <NavLink to="/dashboard" >Dashboard</NavLink>
                 </nav>
             </section>
+
+            <div className="progress-bar-container">
+                <label>Progress:</label>
+                <div className="progress-bar">
+                    <div className="progress" style={{ width: `${progress}%` }}></div>
+                </div>
+                <span>{Math.round(progress)}%</span>
+            </div>
             <UserMsg />
         </header>
     )

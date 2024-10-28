@@ -13,6 +13,8 @@ export const ADD_TODO = 'ADD_TODO'
 export const UPDATE_TODO = 'UPDATE_TODO'
 export const SET_IS_LOADING = 'SET_IS_LOADING'
 
+export const SET_FILTER_BY = 'SET_FILTER_BY'
+
 // User
 export const SET_USER = 'SET_USER'
 export const SET_USER_SCORE = 'SET_USER_SCORE'
@@ -27,7 +29,7 @@ export const CLEAR_TODO = 'CLEAR_TODO'
 const initialState = {
     count: 101,
     todos: [],
-    // todoToEdit: null,
+    filterBy: 'all',
     isLoading: false,
     loggedinUser: userService.getLoggedinUser(),
     // isTodoShown: false,
@@ -86,6 +88,11 @@ function appReducer(state = initialState, cmd = {}) {
             return {
                 ...state,
                 loggedinUser: { ...state.loggedinUser, score: cmd.score }
+            }
+        case SET_FILTER_BY:
+            return {
+                ...state,
+                filterBy: cmd.filterType
             }
         // case TOGGLE_TODO_IS_SHOWN:
         //     return {

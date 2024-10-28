@@ -4,7 +4,7 @@ import { DataTable } from "../cmps/data-table/DataTable.jsx"
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
 import { loadTodos, removeTodo, saveTodo } from '../store/actions/todo.actions.js'
-import { SET_TODOS } from '../store/store.js'
+import { SET_TODOS, SET_FILTER_BY } from '../store/store.js'
 
 const { useState, useEffect } = React
 const { Link, useSearchParams } = ReactRouterDOM
@@ -12,8 +12,13 @@ const { useSelector, useDispatch } = ReactRedux
 
 export function TodoIndex() {
 
-    const todos = useSelector(storeState => storeState.todos)
+    const todos = useSelector(storeState => {
+        if (storeState.filterBy === 'all') return storeState.todos
+        return storeState.todos.filter(todo =>
+            storeState.filterBy === 'active' ? !todo.isDone : todo.isDone)
+    })
     const isLoading = useSelector(storeState => storeState.isLoading)
+    const filterByType = useSelector(storeState => storeState.filterBy)
     const dispatch = useDispatch()
 
     // Special hook for accessing search-params:
@@ -56,6 +61,11 @@ export function TodoIndex() {
     return (
         <section className="todo-index">
             <TodoFilter filterBy={filterBy} onSetFilterBy={setFilterBy} />
+            <select className="filter-type" onChange={(ev) => dispatch({ type: SET_FILTER_BY, filterType: ev.target.value })}>
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="done">Done</option>
+            </select>
             <div>
                 <Link to="/todo/edit" className="btn" >Add Todo</Link>
             </div>

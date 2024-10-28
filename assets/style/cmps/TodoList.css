@@ -11,7 +11,6 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    background-color: var(--clr1bg);
 }
 
 .modal-backdrop {
@@ -21,12 +20,10 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    /* Semi-transparent dark background */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    /* Ensure it appears on top of other elements */
 }
 
 .modal {

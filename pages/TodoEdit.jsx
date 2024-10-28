@@ -1,5 +1,6 @@
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
+import { saveTodo, getTodo } from '../store/actions/todo.actions.js'
 
 const { useState, useEffect } = React
 const { useNavigate, useParams } = ReactRouterDOM
@@ -15,7 +16,7 @@ export function TodoEdit() {
     }, [])
 
     function loadTodo() {
-        todoService.get(params.todoId)
+        getTodo(params.todoId)
             .then(setTodoToEdit)
             .catch(err => console.log('err:', err))
     }
@@ -43,7 +44,7 @@ export function TodoEdit() {
 
     function onSaveTodo(ev) {
         ev.preventDefault()
-        todoService.save(todoToEdit)
+        saveTodo(todoToEdit)
             .then((savedTodo) => {
                 navigate('/todo')
                 showSuccessMsg(`Todo Saved (id: ${savedTodo._id})`)
@@ -68,6 +69,8 @@ export function TodoEdit() {
                 <label htmlFor="isDone">isDone:</label>
                 <input onChange={handleChange} value={isDone} type="checkbox" name="isDone" id="isDone" />
 
+                <label htmlFor="bgColor">Background color:</label>
+                <input onChange={handleChange} value={todoToEdit.bgColor} type="color" name="bgColor" id="bgColor" />
 
                 <button>Save</button>
             </form>

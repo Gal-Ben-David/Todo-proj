@@ -11,7 +11,7 @@ export function TodoList({ todos, onRemoveTodo, onToggleTodo }) {
         <Fragment>
             <ul className="todo-list">
                 {todos.map(todo =>
-                    <li key={todo._id}>
+                    <li key={todo._id} style={{ backgroundColor: todo.bgColor }}>
                         <TodoPreview todo={todo} onToggleTodo={() => onToggleTodo(todo)} />
                         <section>
                             <button onClick={() => { setTodoIdToDelete(todo._id); setIsModalOpen(true) }}>Remove</button>

@@ -43,3 +43,15 @@ export function saveTodo(todo) {
             throw err
         })
 }
+
+export function getTodo(todoId) {
+
+    return todoService.get(todoId)
+        .then(todo => {
+            return todo
+        })
+        .catch(err => {
+            console.log('Todo actions -> Cannot save todo:', err)
+            throw err
+        })
+}

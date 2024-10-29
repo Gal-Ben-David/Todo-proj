@@ -1,5 +1,6 @@
 import { todoService } from "../../services/todo.service.js"
 import { ADD_TODO, REMOVE_TODO, SET_TODOS, SET_IS_LOADING, store, UPDATE_TODO, SET_DONE_TODOS_PERCENT } from "../store.js"
+import { addActivity } from './user.actions.js'
 
 
 export function loadTodos() {
@@ -28,6 +29,7 @@ export function removeTodo(todoId) {
             store.dispatch({ type: REMOVE_TODO, todoId })
             _setTodosData(doneTodosPercent)
         })
+        .then(() => addActivity('Removed the Todo: ' + todoId))
         .catch(err => {
             console.log('Todo actions -> Cannot remove todo:', err)
             throw err
@@ -41,6 +43,11 @@ export function saveTodo(todo) {
             store.dispatch({ type, todo: savedTodo })
             _setTodosData(doneTodosPercent)
             return savedTodo
+        })
+        .then(res => {
+            const actionName = (todo._id) ? 'Updated' : 'Added'
+            return addActivity(`${actionName} a Todo: ` + todo.txt)
+                .then(() => res)
         })
         .catch(err => {
             console.log('Todo actions -> Cannot save todo:', err)

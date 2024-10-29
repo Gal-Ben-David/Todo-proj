@@ -1,4 +1,4 @@
-const { useState } = React
+const { useState, useEffect } = React
 const { Link, NavLink } = ReactRouterDOM
 const { useNavigate } = ReactRouter
 const { useSelector, useDispatch } = ReactRedux
@@ -15,12 +15,7 @@ export function AppHeader() {
 
     const todos = useSelector(storeState => storeState.todos)
     const loggedinUser = useSelector(storeState => storeState.loggedinUser)
-
-    // Calculate the percentage of completed todos
-    const totalTodos = useSelector(storeState => storeState.todos.length)
-    const completedTodos = todos.filter(todo => todo.isDone).length
-    const progress = totalTodos ? (completedTodos / totalTodos) * 100 : 0
-
+    const doneTodosPercent = useSelector((storeState) => storeState.doneTodosPercent)
 
     function onLogout() {
         logout()
@@ -29,10 +24,7 @@ export function AppHeader() {
             })
     }
 
-    function onSetUser(user) {
-        setUser(user)
-        navigate('/')
-    }
+    const formattedPercent = todos ? doneTodosPercent.toFixed(2) : null
 
     return (
         <header className="app-header full main-layout">
@@ -46,7 +38,7 @@ export function AppHeader() {
                     </ section >
                 ) : (
                     <section>
-                        <LoginSignup onSetUser={onSetUser} />
+                        <LoginSignup />
                     </section>
                 )}
                 <nav className="app-nav">
@@ -60,9 +52,9 @@ export function AppHeader() {
             <div className="progress-bar-container">
                 <label>Progress:</label>
                 <div className="progress-bar">
-                    <div className="progress" style={{ width: `${progress}%` }}></div>
+                    <div className="progress" style={{ width: `${formattedPercent}%` }}></div>
                 </div>
-                <span>{Math.round(progress)}%</span>
+                <span>{Math.round(formattedPercent)}%</span>
             </div>
             <UserMsg />
         </header>

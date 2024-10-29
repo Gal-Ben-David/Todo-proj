@@ -1,5 +1,6 @@
 import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
+import { userService } from './user.service.js'
 
 const TODO_KEY = 'todoDB'
 _createTodos()
@@ -13,6 +14,7 @@ export const todoService = {
     getDefaultFilter,
     getFilterFromSearchParams,
     getImportanceStats,
+    getDoneTodosPercent
 }
 // For Debug (easy access from console):
 window.cs = todoService
@@ -38,7 +40,7 @@ function query(filterBy = {}) {
                 todos = todos.filter(todo => todo.isDone)
             }
 
-            return todos
+            return getDoneTodosPercent().then(doneTodosPercent => ({ todos, doneTodosPercent }))
         })
 }
 
@@ -52,17 +54,32 @@ function get(todoId) {
 
 function remove(todoId) {
     return storageService.remove(TODO_KEY, todoId)
+        .then(() => getDoneTodosPercent())
 }
 
 function save(todo) {
+    if (!userService.getLoggedinUser()) return Promise.reject('User is not logged in')
     if (todo._id) {
         // TODO - updatable fields
         todo.updatedAt = Date.now()
         return storageService.put(TODO_KEY, todo)
+            .then(savedTodo => {
+                return getDoneTodosPercent()
+                    .then(doneTodosPercent => ({ savedTodo, doneTodosPercent }))
+            })
+        // Promise.all([storageService.put(TODO_KEY, todo), getDoneTodosPercent()])
+        //     .then(([savedTodo, doneTodosPercent]) => ({ savedTodo, doneTodosPercent }))
     } else {
         todo.createdAt = todo.updatedAt = Date.now()
 
         return storageService.post(TODO_KEY, todo)
+            .then(savedTodo => {
+                return getDoneTodosPercent()
+                    .then(doneTodosPercent => ({ savedTodo, doneTodosPercent }))
+            })
+
+        // return Promise.all([storageService.post(TODO_KEY, todo), getDoneTodosPercent()])
+        //     .then(([savedTodo, doneTodosPercent]) => ({ savedTodo, doneTodosPercent }))
     }
 }
 
@@ -134,6 +151,24 @@ function _getTodoCountByImportanceMap(todos) {
     }, { low: 0, normal: 0, urgent: 0 })
     return todoCountByImportanceMap
 }
+
+
+function getDoneTodosPercent() {
+    return storageService.query(TODO_KEY)
+        .then(todos => {
+            const doneTodosCount = todos.reduce((acc, todo) => {
+                if (todo.isDone) acc++
+                return acc
+            }, 0)
+
+            return (doneTodosCount / todos.length) * 100 || 0
+        })
+        .catch(err => {
+            console.error('Cannot get done todos percent:', err)
+            throw err
+        })
+}
+
 
 
 // Data Model:

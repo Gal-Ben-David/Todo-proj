@@ -1,5 +1,5 @@
 import { todoService } from "../../services/todo.service.js"
-import { ADD_TODO, REMOVE_TODO, SET_TODOS, SET_IS_LOADING, store, UPDATE_TODO } from "../store.js"
+import { ADD_TODO, REMOVE_TODO, SET_TODOS, SET_IS_LOADING, store, UPDATE_TODO, SET_DONE_TODOS_PERCENT } from "../store.js"
 
 
 export function loadTodos() {
@@ -8,8 +8,9 @@ export function loadTodos() {
     store.dispatch({ type: SET_IS_LOADING, isLoading: true })
 
     return todoService.query(filterBy)
-        .then(todos => {
+        .then(({ todos, doneTodosPercent }) => {
             store.dispatch({ type: SET_TODOS, todos })
+            _setTodosData(doneTodosPercent)
         })
         .catch(err => {
             console.log('Todo actions -> Cannot load todos:', err)
@@ -23,8 +24,9 @@ export function loadTodos() {
 export function removeTodo(todoId) {
 
     return todoService.remove(todoId)
-        .then(() => {
+        .then(doneTodosPercent => {
             store.dispatch({ type: REMOVE_TODO, todoId })
+            _setTodosData(doneTodosPercent)
         })
         .catch(err => {
             console.log('Todo actions -> Cannot remove todo:', err)
@@ -35,8 +37,9 @@ export function removeTodo(todoId) {
 export function saveTodo(todo) {
     const type = todo._id ? UPDATE_TODO : ADD_TODO
     return todoService.save(todo)
-        .then(savedTodo => {
+        .then(({ savedTodo, doneTodosPercent }) => {
             store.dispatch({ type, todo: savedTodo })
+            _setTodosData(doneTodosPercent)
             return savedTodo
         })
         .catch(err => {
@@ -55,4 +58,8 @@ export function getTodo(todoId) {
             console.log('Todo actions -> Cannot save todo:', err)
             throw err
         })
+}
+
+function _setTodosData(doneTodosPercent) {
+    store.dispatch({ type: SET_DONE_TODOS_PERCENT, doneTodosPercent })
 }

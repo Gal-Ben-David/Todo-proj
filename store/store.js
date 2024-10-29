@@ -15,6 +15,7 @@ export const UPDATE_TODO = 'UPDATE_TODO'
 export const SET_IS_LOADING = 'SET_IS_LOADING'
 
 export const SET_FILTER_BY = 'SET_FILTER_BY'
+export const SET_DONE_TODOS_PERCENT = 'SET_DONE_TODOS_PERCENT'
 
 // User
 export const SET_USER = 'SET_USER'
@@ -32,6 +33,7 @@ const initialState = {
     todos: [],
     filterBy: todoService.getDefaultFilter(),
     isLoading: false,
+    doneTodosPercent: 0,
     loggedinUser: userService.getLoggedinUser(),
     // isTodoShown: false,
     // shoppingTodo: []
@@ -94,6 +96,11 @@ function appReducer(state = initialState, cmd = {}) {
             return {
                 ...state,
                 filterBy: { ...state.filterBy, ...cmd.filterBy }
+            }
+        case SET_DONE_TODOS_PERCENT:
+            return {
+                ...state,
+                doneTodosPercent: cmd.doneTodosPercent
             }
         default: return state
     }

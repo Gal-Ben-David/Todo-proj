@@ -55,6 +55,7 @@ export function TodoIndex() {
 
     function onToggleTodo(todo) {
         const todoToSave = { ...todo, isDone: !todo.isDone }
+        console.log(todoToSave)
         saveTodo(todoToSave)
             .then((savedTodo) => {
                 if (savedTodo.isDone) updateBalance()

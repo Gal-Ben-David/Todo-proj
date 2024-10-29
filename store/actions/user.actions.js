@@ -1,5 +1,5 @@
 import { userService } from "../../services/user.service.js"
-import { CLEAR_CART, SET_USER, SET_USER_SCORE, store, TOGGLE_CART_IS_SHOWN } from "../store.js"
+import { SET_USER, SET_USER_SCORE, store } from "../store.js"
 
 
 export function login(credentials) {

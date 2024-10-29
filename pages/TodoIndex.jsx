@@ -33,7 +33,7 @@ export function TodoIndex() {
         setSearchParams(filterBy)
         loadTodos()
             .catch(err => {
-                console.eror('err:', err)
+                console.log('err:', err)
                 showErrorMsg('Cannot load todos')
             })
     }, [filterBy])

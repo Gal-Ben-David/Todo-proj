@@ -1,4 +1,5 @@
 import { userService } from "../services/user.service.js"
+import { todoService } from "../services/todo.service.js"
 
 const { createStore } = Redux
 
@@ -29,7 +30,7 @@ export const CLEAR_TODO = 'CLEAR_TODO'
 const initialState = {
     count: 101,
     todos: [],
-    filterBy: 'all',
+    filterBy: todoService.getDefaultFilter(),
     isLoading: false,
     loggedinUser: userService.getLoggedinUser(),
     // isTodoShown: false,
@@ -87,34 +88,13 @@ function appReducer(state = initialState, cmd = {}) {
         case SET_USER_SCORE:
             return {
                 ...state,
-                loggedinUser: { ...state.loggedinUser, score: cmd.score }
+                loggedinUser: { ...state.loggedinUser, balance: cmd.balance }
             }
         case SET_FILTER_BY:
             return {
                 ...state,
-                filterBy: cmd.filterType
+                filterBy: { ...state.filterBy, ...cmd.filterBy }
             }
-        // case TOGGLE_TODO_IS_SHOWN:
-        //     return {
-        //         ...state,
-        //         isTodoShown: !state.isTodoShown
-        //     }
-        // case ADD_TODO_TO_TODO:
-        //     return {
-        //         ...state,
-        //         shoppingTodo: [...state.shoppingTodo, cmd.todo]
-        //     }
-        // case REMOVE_TODO_FROM_TODO:
-        //     return {
-        //         ...state,
-        //         shoppingTodo: state.shoppingTodo.filter(todo => todo._id !== cmd.todoId)
-        //     }
-        // case CLEAR_TODO:
-        //     return {
-        //         ...state,
-        //         shoppingTodo: []
-        //     }
-
         default: return state
     }
 }
@@ -128,14 +108,6 @@ window.gStore = store
 // store.subscribe(() => {
 //     console.log('Current state is:', store.getState())
 // })
-
-
-
-
-
-
-
-
 
 // export const SET_FILTER_BY = 'SET_FILTER_BY'
 // export const REMOVE_TODO_UNDO = 'REMOVE_TODO_UNDO'

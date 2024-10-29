@@ -4,6 +4,7 @@ import { DataTable } from "../cmps/data-table/DataTable.jsx"
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
 import { loadTodos, removeTodo, saveTodo } from '../store/actions/todo.actions.js'
+import { updateBalance } from '../store/actions/user.actions.js'
 import { SET_TODOS, SET_FILTER_BY } from '../store/store.js'
 
 const { useState, useEffect } = React
@@ -12,28 +13,34 @@ const { useSelector, useDispatch } = ReactRedux
 
 export function TodoIndex() {
 
-    const todos = useSelector(storeState => {
-        if (storeState.filterBy === 'all') return storeState.todos
-        return storeState.todos.filter(todo =>
-            storeState.filterBy === 'active' ? !todo.isDone : todo.isDone)
-    })
+    const todos = useSelector(storeState => storeState.todos)
     const isLoading = useSelector(storeState => storeState.isLoading)
-    const filterByType = useSelector(storeState => storeState.filterBy)
-    const dispatch = useDispatch()
 
     // Special hook for accessing search-params:
     const [searchParams, setSearchParams] = useSearchParams()
     const defaultFilter = todoService.getFilterFromSearchParams(searchParams)
-    const [filterBy, setFilterBy] = useState(defaultFilter)
+    const filterBy = useSelector((storeState) => storeState.filterBy)
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (defaultFilter) {
+            dispatch({ type: SET_FILTER_BY, filterBy: defaultFilter })
+        }
+    }, [])
 
     useEffect(() => {
         setSearchParams(filterBy)
-        loadTodos(filterBy)
+        loadTodos()
             .catch(err => {
                 console.eror('err:', err)
                 showErrorMsg('Cannot load todos')
             })
     }, [filterBy])
+
+    function onSetFilterBy(filterBy) {
+        dispatch({ type: SET_FILTER_BY, filterBy })
+    }
 
     function onRemoveTodo(todoId) {
         removeTodo(todoId)
@@ -50,6 +57,7 @@ export function TodoIndex() {
         const todoToSave = { ...todo, isDone: !todo.isDone }
         saveTodo(todoToSave)
             .then((savedTodo) => {
+                if (savedTodo.isDone) updateBalance()
                 showSuccessMsg(`Todo is ${(savedTodo.isDone) ? 'done' : 'back on your list'}`)
             })
             .catch(err => {
@@ -60,12 +68,7 @@ export function TodoIndex() {
 
     return (
         <section className="todo-index">
-            <TodoFilter filterBy={filterBy} onSetFilterBy={setFilterBy} />
-            <select className="filter-type" onChange={(ev) => dispatch({ type: SET_FILTER_BY, filterType: ev.target.value })}>
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="done">Done</option>
-            </select>
+            <TodoFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
             <div>
                 <Link to="/todo/edit" className="btn" >Add Todo</Link>
             </div>

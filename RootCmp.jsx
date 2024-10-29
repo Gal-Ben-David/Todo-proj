@@ -1,6 +1,7 @@
 const Router = ReactRouterDOM.HashRouter
 const { Routes, Route } = ReactRouterDOM
 const { Provider } = ReactRedux
+const { useEffect } = React
 
 import { AppHeader } from "./cmps/AppHeader.jsx"
 import { Home } from "./pages/Home.jsx"
@@ -12,8 +13,18 @@ import { AboutTeam } from "./cmps/AboutTeam.jsx"
 import { AboutVision } from "./cmps/AboutVision.jsx"
 import { Dashboard } from "./pages/Dashboard.jsx"
 import { store } from './store/store.js'
+import { loadTodos } from './store/actions/todo.actions.js'
 
 export function RootCmp() {
+
+    useEffect(() => {
+        loadTodos()
+            .catch(err => {
+                console.eror('err:', err)
+                showErrorMsg('Cannot load todos')
+            })
+    }, [])
+
 
     return (
         <Provider store={store}>

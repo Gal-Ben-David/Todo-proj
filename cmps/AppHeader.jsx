@@ -7,13 +7,14 @@ import { userService } from '../services/user.service.js'
 import { UserMsg } from "./UserMsg.jsx"
 import { LoginSignup } from './LoginSignup.jsx'
 import { showErrorMsg } from '../services/event-bus.service.js'
+import { logout } from '../store/actions/user.actions.js'
 
 
 export function AppHeader() {
     const navigate = useNavigate()
-    const [user, setUser] = useState(userService.getLoggedinUser())
 
     const todos = useSelector(storeState => storeState.todos)
+    const loggedinUser = useSelector(storeState => storeState.loggedinUser)
 
     // Calculate the percentage of completed todos
     const totalTodos = useSelector(storeState => storeState.todos.length)
@@ -22,10 +23,7 @@ export function AppHeader() {
 
 
     function onLogout() {
-        userService.logout()
-            .then(() => {
-                onSetUser(null)
-            })
+        logout()
             .catch((err) => {
                 showErrorMsg('OOPs try again')
             })
@@ -35,14 +33,15 @@ export function AppHeader() {
         setUser(user)
         navigate('/')
     }
+
     return (
         <header className="app-header full main-layout">
             <section className="header-container">
                 <h1>React Todo App</h1>
-                {user ? (
+                {loggedinUser ? (
                     < section >
-
-                        <Link to={`/user/${user._id}`}>Hello {user.fullname}</Link>
+                        <Link to={`/user/${loggedinUser._id}`}>Hello {loggedinUser.fullname} ' ' </Link>
+                        <span>your balance: {loggedinUser.balance}</span>
                         <button onClick={onLogout}>Logout</button>
                     </ section >
                 ) : (

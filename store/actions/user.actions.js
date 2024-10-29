@@ -38,13 +38,11 @@ export function logout() {
         })
 }
 
-export function checkout(diff) {
+export function updateBalance() {
 
-    return userService.updateScore(diff)
-        .then(newScore => {
-            store.dispatch({ type: SET_USER_SCORE, score: newScore })
-            store.dispatch({ type: CLEAR_CART })
-            store.dispatch({ type: TOGGLE_CART_IS_SHOWN })
+    return userService.updateBalance()
+        .then(newBalance => {
+            store.dispatch({ type: SET_USER_SCORE, balance: newBalance })
         })
         .catch(err => {
             console.log('User actions -> Cannot checkout:', err)

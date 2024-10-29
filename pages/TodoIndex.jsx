@@ -7,7 +7,7 @@ import { loadTodos, removeTodo, saveTodo } from '../store/actions/todo.actions.j
 import { updateBalance } from '../store/actions/user.actions.js'
 import { SET_TODOS, SET_FILTER_BY } from '../store/store.js'
 
-const { useState, useEffect } = React
+const { useState, useEffect, Fragment } = React
 const { Link, useSearchParams } = ReactRouterDOM
 const { useSelector, useDispatch } = ReactRedux
 
@@ -74,15 +74,18 @@ export function TodoIndex() {
                 <Link to="/todo/edit" className="btn" >Add Todo</Link>
             </div>
             <h2>Todos List</h2>
-            {isLoading
-                ? <p>Loading...</p>
-                : <TodoList todos={todos} onRemoveTodo={onRemoveTodo} onToggleTodo={onToggleTodo} />
-            }
-            <hr />
-            <h2>Todos Table</h2>
-            <div style={{ width: '60%', margin: 'auto' }}>
-                <DataTable todos={todos} onRemoveTodo={onRemoveTodo} />
-            </div>
+            {isLoading ? <p>Loading...</p>
+                : todos && todos.length === 0 ? <div>No todos to show</div>
+                    : <Fragment>
+                        <TodoList todos={todos} onRemoveTodo={onRemoveTodo} onToggleTodo={onToggleTodo} />
+
+                        <hr />
+                        <h2>Todos Table</h2>
+                        <div style={{ width: '60%', margin: 'auto' }}>
+                            <DataTable todos={todos} onRemoveTodo={onRemoveTodo} />
+                        </div>
+                    </Fragment>}
+
         </section>
     )
 }

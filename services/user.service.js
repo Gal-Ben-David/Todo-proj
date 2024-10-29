@@ -9,7 +9,8 @@ export const userService = {
     getById,
     query,
     getEmptyCredentials,
-    updateBalance
+    updateBalance,
+    updateUserPrefs
 }
 const STORAGE_KEY_LOGGEDIN = 'user'
 const STORAGE_KEY = 'userDB'
@@ -32,7 +33,7 @@ function login({ username, password }) {
 }
 
 function signup({ username, password, fullname }) {
-    const user = { username, password, fullname }
+    const user = { username, password, fullname, activities: [], prefs: getDefaultPrefs() }
     user.createdAt = user.updatedAt = Date.now()
     user.balance = 1000
 
@@ -50,9 +51,22 @@ function getLoggedinUser() {
 }
 
 function _setLoggedinUser(user) {
-    const userToSave = { _id: user._id, fullname: user.fullname, balance: user.balance }
+    const userToSave = { _id: user._id, fullname: user.fullname, balance: user.balance, prefs: user.prefs }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(userToSave))
     return userToSave
+}
+
+function getDefaultPrefs() {
+    return { color: '#eeeeee', bgColor: "#191919", fullname: '' }
+}
+
+function updateUserPrefs(userToUpdate) {
+    const loggedinUserId = getLoggedinUser()._id
+    return getById(loggedinUserId)
+        .then(user => {
+            user = { ...user, ...userToUpdate }
+            return _saveUser(user)
+        })
 }
 
 function getEmptyCredentials() {
@@ -73,6 +87,14 @@ function updateBalance() {
         .then(user => {
             _setLoggedinUser(user)
             return user.balance
+        })
+}
+
+function _saveUser(user) {
+    return storageService.put(STORAGE_KEY, user)
+        .then((user) => {
+            _setLoggedinUser(user)
+            return user
         })
 }
 

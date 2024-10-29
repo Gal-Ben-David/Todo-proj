@@ -49,3 +49,15 @@ export function updateBalance() {
             throw err
         })
 }
+
+export function updateUser(userToUpdate) {
+
+    return userService.updateUserPrefs(userToUpdate)
+        .then((updatedUser) => {
+            store.dispatch({ type: SET_USER, user: updatedUser, })
+        })
+        .catch(err => {
+            console.error('Cannot update user:', err)
+            throw err
+        })
+}

@@ -24,10 +24,19 @@ export function AppHeader() {
             })
     }
 
+    function getStyleByUser() {
+        const prefs = {}
+        if (loggedinUser && loggedinUser.prefs) {
+            prefs.color = loggedinUser.prefs.color
+            prefs.backgroundColor = loggedinUser.prefs.bgColor
+        }
+        return prefs
+    }
+
     const formattedPercent = todos ? doneTodosPercent.toFixed(2) : null
 
     return (
-        <header className="app-header full main-layout">
+        <header style={getStyleByUser()} className="app-header full main-layout">
             <section className="header-container">
                 <h1>React Todo App</h1>
                 {loggedinUser ? (
@@ -46,6 +55,7 @@ export function AppHeader() {
                     <NavLink to="/about" >About</NavLink>
                     <NavLink to="/todo" >Todos</NavLink>
                     <NavLink to="/dashboard" >Dashboard</NavLink>
+                    {loggedinUser && <Link to={`/user/${loggedinUser._id}`}>User Profile</Link>}
                 </nav>
             </section>
 
